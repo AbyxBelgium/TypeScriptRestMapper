@@ -1,0 +1,26 @@
+{
+  "name": "typescript-rest-mapper",
+  "version": "1.0.0",
+  "description": "Package that allows you to automagically build services that consume REST API's. Received/send data is automatically converted between real TypeScript-objects and JSON-objects.",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbyxBelgium/TypeScriptRestMapper.git"
+  },
+  "keywords": [
+    "service",
+    "rest-api",
+    "typescript",
+    "rest",
+    "mapper"
+  ],
+  "author": "Pieter Verschaffelt",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/AbyxBelgium/TypeScriptRestMapper/issues"
+  },
+  "homepage": "https://github.com/AbyxBelgium/TypeScriptRestMapper#readme"
+}
