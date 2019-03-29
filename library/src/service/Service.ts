@@ -1,6 +1,7 @@
 import Entity from "../entity/Entity";
 import Status from "./Status";
 import axios from "axios";
+import pluralize from "pluralize";
 
 export default class Service<T extends Entity> {
     private type: string;
@@ -13,7 +14,7 @@ export default class Service<T extends Entity> {
 
     async retrieve(id: string): Promise<Status<T>> {
         try {
-            let result: any = await axios.get("http://localhost:8090/" + this.type.toLowerCase() + "s/" + id);
+            let result: any = await axios.get("http://localhost:8090/" + pluralize.plural(this.type.toLowerCase()) + "/" + id);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
             console.log(error);
@@ -24,12 +25,31 @@ export default class Service<T extends Entity> {
     private parseObject(data: any, typeClass): any {
         let payload = new typeClass();
         for (let property of payload.getReadProperties()) {
-            // Remove leading '_' from input
-            property = property.substr(1);
-            if (!data.hasOwnProperty(property)) {
-                console.log("WARNING: property " + property + " was not found in response results!");
+            let key = property["key"].substr(1);
+
+            if (property["type"].name !== 'String' && property["type"].name !== 'Number') {
+                payload[key] = this.parseObject(data[key], property["type"]);
+            } else {
+                if (!data.hasOwnProperty(key)) {
+                    console.info("WARNING: property " + key + " was not found in response results!");
+                }
+                payload[key] = data[key];
             }
-            payload[property] = data[property];
+        }
+
+        for (let property of payload.getArrayReadProperties()) {
+            // Remove leading '_' from input
+            let key = property["key"].substr(1);
+
+            if (!data.hasOwnProperty(key)) {
+                console.log("WARNING: property " + key + " was not found in response results!");
+            }
+
+            payload[key] = [];
+
+            for (let arrayEl of data[key]) {
+                payload[key].push(this.parseObject(arrayEl, property['type']))
+            }
         }
 
         payload.id = data.id;

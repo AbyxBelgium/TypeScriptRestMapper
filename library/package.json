@@ -33,9 +33,9 @@
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
     "reflect-metadata": "^0.1.13"
-
   },
   "dependencies": {
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "pluralize": "^7.0.0"
   }
 }

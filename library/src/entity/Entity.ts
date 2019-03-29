@@ -11,15 +11,23 @@ export default abstract class Entity {
 
     getReadProperties(): string[] {
         if (!this["_read_properties"]) {
-            throw "No valid properties are set to be read on this object! Please use the @Read decorator on the desired fields.";
+            return [];
         }
 
         return this["_read_properties"];
     }
 
+    getArrayReadProperties(): string[] {
+        if (!this["_read_array_properties"]) {
+            return [];
+        }
+
+        return this["_read_array_properties"];
+    }
+
     getStoreJson(): object {
         if (!this["_store_properties"]) {
-            throw "No valid properties are set to be stored on this object! Please use the @Store decorator on the desired fields.";
+            return [];
         }
 
         return this.getJson("_store_properties");
@@ -27,7 +35,7 @@ export default abstract class Entity {
 
     getUpdateJson(): object {
         if (!this["_update_properties"]) {
-            throw "No valid properties are set to be updated on this object! Please use the @Update decorator on the desired fields.";
+            return [];
         }
 
         return this.getJson("_update_properties");
