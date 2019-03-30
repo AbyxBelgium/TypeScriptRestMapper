@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 export function Update(path: string = "") {
     return function(target: any, key: string) {
         let t = Reflect.getMetadata("design:type", target, key);

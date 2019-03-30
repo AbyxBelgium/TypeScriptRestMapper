@@ -56,15 +56,15 @@ export default class Service<T extends Entity> {
         return payload;
     }
 
-    // async store(item: T): Promise<Status<void>> {
-    //     try {
-    //         let result: any = await client.post(this.name + "s", item.getStoreJson());
-    //         return new Status(true);
-    //     } catch (error) {
-    //         console.log(error);
-    //         return new Status(false, error);
-    //     }
-    // }
+    async store(item: T): Promise<Status<void>> {
+        try {
+            let result: any = await axios.post(this.name + "s", item.getStoreJson());
+            return new Status(true);
+        } catch (error) {
+            console.log(error);
+            return new Status(false, error);
+        }
+    }
     //
     // async update(item: T): Promise<Status<void>> {
     //     try {

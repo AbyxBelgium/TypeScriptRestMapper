@@ -1,6 +1,6 @@
 export function ReadArray(type) {
     return function(target: any, key: string) {
-        if (!target.hasOwnProperty("_store_properties")) {
+        if (!target.hasOwnProperty("_read_array_properties")) {
             target["_read_array_properties"] = [];
         }
         target["_read_array_properties"].push({
