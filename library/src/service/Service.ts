@@ -61,7 +61,7 @@ export default class Service<T extends Entity> {
 
     async store(item: T): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type), item.getStoreJson());
+            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -69,23 +69,29 @@ export default class Service<T extends Entity> {
         }
     }
 
-    private produceJSONObject(object: Entity) {
+    private produceJSONObject(object: Entity, singularType: DecoratorType, arrayType: DecoratorType) {
         let output = {};
-        for (let prop of object.getServiceProperties(DecoratorType.STORE_TYPE)) {
+        for (let prop of object.getServiceProperties(singularType)) {
+            let serializedKey = prop["key"].substr(1);
+            if (!object.hasOwnProperty(prop["key"])) {
+                console.info("Tried to serialize not-existing property: " + serializedKey);
+            }
+
             if (this.isPrimitive(prop["type"].name)) {
-                output[prop["key"]] = this.produceJSONObject(object[prop["key"]]);
+                output[serializedKey] = this.produceJSONObject(object[prop["key"]], singularType, arrayType);
             } else {
-                output[prop["key"]] = object[prop["key"]];
+                output[serializedKey] = object[prop["key"]];
             }
         }
 
-        for (let prop of object.getServiceProperties(DecoratorType.STORE_ARRAY_TYPE)) {
+        for (let prop of object.getServiceProperties(arrayType)) {
+            let serializedKey = prop["key"].substr(1);
             if (this.isPrimitive(prop["type"].name)) {
-                output[prop["key"]] = object[prop["key"]];
+                output[serializedKey] = object[prop["key"]];
             } else {
-                output[prop["key"]] = [];
+                output[serializedKey] = [];
                 for (let val of object[prop["key"]]) {
-                    output[prop["key"]].push(this.produceJSONObject(val));
+                    output[serializedKey].push(this.produceJSONObject(val), singularType, arrayType);
                 }
             }
         }
