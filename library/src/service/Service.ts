@@ -13,6 +13,10 @@ export default class Service<T extends Entity> {
         this.type = x.name;
         this.typeClass = x;
         this.baseURL = baseURL;
+
+        if (!this.baseURL.endsWith('/')) {
+            this.baseURL += '/';
+        }
     }
 
     async retrieve(id: string): Promise<Status<T>> {
@@ -61,7 +65,7 @@ export default class Service<T extends Entity> {
 
     async store(item: T): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
+            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type.toLowerCase()), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -78,9 +82,9 @@ export default class Service<T extends Entity> {
             }
 
             if (this.isPrimitive(prop["type"].name)) {
-                output[serializedKey] = this.produceJSONObject(object[prop["key"]], singularType, arrayType);
-            } else {
                 output[serializedKey] = object[prop["key"]];
+            } else {
+                output[serializedKey] = this.produceJSONObject(object[prop["key"]], singularType, arrayType);
             }
         }
 
@@ -91,11 +95,12 @@ export default class Service<T extends Entity> {
             } else {
                 output[serializedKey] = [];
                 for (let val of object[prop["key"]]) {
-                    output[serializedKey].push(this.produceJSONObject(val), singularType, arrayType);
+                    output[serializedKey].push(this.produceJSONObject(val, singularType, arrayType));
                 }
             }
         }
 
+        console.log(output);
         return output;
     }
 
