@@ -83,6 +83,39 @@ export default class Service<T extends Entity> {
         }
     }
 
+    async delete(item: T): Promise<Status<T>> {
+        try {
+            await axios.delete(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + item.id);
+            return new Status<T>(true, null, null);
+        } catch (error) {
+            console.log(error);
+            return new Status<T>(false, error);
+        }
+    }
+
+    async list(page: number, size: number): Promise<Status<T[]>> {
+        try {
+
+            let response: any = await axios.get(this.baseURL + pluralize.plural(this.type.toLowerCase()), {
+                    params: {
+                        page: page,
+                        size: size
+                    }
+                }
+            );
+
+            let payload: T[] = [];
+            for (let item of response.data.items) {
+                payload.push(this.parseObject(item, this.typeClass));
+            }
+
+            return new Status(true, "", payload);
+        } catch (error) {
+            console.log(error);
+            return new Status(false, error);
+        }
+    }
+
     private produceJSONObject(object: Entity, singularType: DecoratorType, arrayType: DecoratorType) {
         let output = {};
         for (let prop of object.getServiceProperties(singularType)) {
@@ -117,49 +150,4 @@ export default class Service<T extends Entity> {
     private isPrimitive(typeName: string): boolean {
         return typeName === "String" || typeName === "number";
     }
-
-    //
-    // async list(page: number, size: number): Promise<Status<T[]>> {
-    //     try {
-    //
-    //         let response: any = await client.get(this.name + "s", {
-    //                 params: {
-    //                     page: page,
-    //                     size: size
-    //                 }
-    //             }
-    //         );
-    //
-    //         let payload: T[] = [];
-    //         for (let item of response.data.items) {
-    //             let created: T = new this.typeClass();
-    //             for (let property of created.getReadProperties()) {
-    //                 // Remove leading '_' from input
-    //                 property = property.substr(1);
-    //                 if (!item.hasOwnProperty(property)) {
-    //                     throw "Property " + property + " was not found in response results!";
-    //                 }
-    //
-    //                 created[property] = item[property];
-    //             }
-    //             created.id = item.id;
-    //             payload.push(created);
-    //         }
-    //
-    //         return new Status(true, "", payload);
-    //     } catch (error) {
-    //         console.log(error);
-    //         return new Status(false, error);
-    //     }
-    // }
-    //
-    // async delete(item: T): Promise<Status<T>> {
-    //     try {
-    //         await client.delete(this.name + "s/" + item.id);
-    //         return new Status<T>(true);
-    //     } catch (error) {
-    //         console.log(error);
-    //         return new Status<T>(false, error);
-    //     }
-    // }
 }
