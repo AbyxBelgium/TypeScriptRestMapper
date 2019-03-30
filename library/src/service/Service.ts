@@ -6,18 +6,20 @@ import pluralize from "pluralize";
 export default class Service<T extends Entity> {
     private type: string;
     private typeClass: any;
+    private baseURL: string;
 
-    constructor(x: (new () => T)) {
+    constructor(x: (new () => T), baseURL: string) {
         this.type = x.name;
         this.typeClass = x;
+        this.baseURL = baseURL;
     }
 
     async retrieve(id: string): Promise<Status<T>> {
         try {
-            let result: any = await axios.get("http://localhost:8090/" + pluralize.plural(this.type.toLowerCase()) + "/" + id);
+            let result: any = await axios.get(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + id);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
-            console.log(error);
+            console.error(error);
             return new Status(false, error);
         }
     }
@@ -58,13 +60,19 @@ export default class Service<T extends Entity> {
 
     async store(item: T): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.name + "s", item.getStoreJson());
-            return new Status(true);
+            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type), item.getStoreJson());
+            return new Status(true, null, null);
         } catch (error) {
-            console.log(error);
-            return new Status(false, error);
+            console.error(error);
+            return new Status(false, error, null);
         }
     }
+
+    private produceJSON(object: Entity) {
+
+    }
+
+
     //
     // async update(item: T): Promise<Status<void>> {
     //     try {

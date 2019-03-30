@@ -1,11 +1,5 @@
+import {DecoratorType, genericDecorator} from "./genericDecorator";
+
 export function ReadArray(type) {
-    return function(target: any, key: string) {
-        if (!target.hasOwnProperty("_read_array_properties")) {
-            target["_read_array_properties"] = [];
-        }
-        target["_read_array_properties"].push({
-            key: key,
-            type: type
-        });
-    }
+    return genericDecorator(DecoratorType.READ_ARRAY_TYPE);
 }
