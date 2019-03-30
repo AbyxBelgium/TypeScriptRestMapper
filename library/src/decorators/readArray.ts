@@ -1,5 +1,5 @@
-import {DecoratorType, genericDecorator} from "./genericDecorator";
+import {DecoratorType, genericArrayDecorator, genericDecorator} from "./genericDecorator";
 
 export function ReadArray(type) {
-    return genericDecorator(DecoratorType.READ_ARRAY_TYPE);
+    return genericArrayDecorator(DecoratorType.READ_ARRAY_TYPE, type);
 }

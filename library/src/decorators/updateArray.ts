@@ -1,5 +1,5 @@
-import {DecoratorType, genericDecorator} from "./genericDecorator";
+import {DecoratorType, genericArrayDecorator, genericDecorator} from "./genericDecorator";
 
 export function UpdateArray(type) {
-    return genericDecorator(DecoratorType.UPDATE_ARRAY_TYPE);
+    return genericArrayDecorator(DecoratorType.UPDATE_ARRAY_TYPE, type);
 }

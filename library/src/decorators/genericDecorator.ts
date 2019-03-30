@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 export enum DecoratorType {
     READ_TYPE = "_read_properties",
     STORE_TYPE = "_store_properties",
@@ -16,6 +18,18 @@ export function genericDecorator(decoratorType: string) {
         target[decoratorType].push({
             key: key,
             type: t
+        });
+    }
+}
+
+export function genericArrayDecorator(decoratorType: string, arrayType) {
+    return function(target: any, key: string) {
+        if (!target.hasOwnProperty(decoratorType)) {
+            target[decoratorType] = [];
+        }
+        target[decoratorType].push({
+            key: key,
+            type: arrayType
         });
     }
 }
