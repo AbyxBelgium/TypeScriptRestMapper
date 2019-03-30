@@ -2,6 +2,7 @@ import Entity from "../entity/Entity";
 import Status from "./Status";
 import axios from "axios";
 import pluralize from "pluralize";
+import {DecoratorType} from "../decorators/genericDecorator";
 
 export default class Service<T extends Entity> {
     private type: string;
@@ -26,10 +27,10 @@ export default class Service<T extends Entity> {
 
     private parseObject(data: any, typeClass): any {
         let payload = new typeClass();
-        for (let property of payload.getReadProperties()) {
+        for (let property of payload.getServiceProperties(DecoratorType.READ_TYPE)) {
             let key = property["key"].substr(1);
 
-            if (property["type"].name !== 'String' && property["type"].name !== 'Number') {
+            if (!this.isPrimitive(property["type"].name)) {
                 payload[key] = this.parseObject(data[key], property["type"]);
             } else {
                 if (!data.hasOwnProperty(key)) {
@@ -39,7 +40,7 @@ export default class Service<T extends Entity> {
             }
         }
 
-        for (let property of payload.getArrayReadProperties()) {
+        for (let property of payload.getServiceProperties(DecoratorType.READ_ARRAY_TYPE)) {
             // Remove leading '_' from input
             let key = property["key"].substr(1);
 
@@ -68,10 +69,33 @@ export default class Service<T extends Entity> {
         }
     }
 
-    private produceJSON(object: Entity) {
+    private produceJSONObject(object: Entity) {
+        let output = {};
+        for (let prop of object.getServiceProperties(DecoratorType.STORE_TYPE)) {
+            if (this.isPrimitive(prop["type"].name)) {
+                output[prop["key"]] = this.produceJSONObject(object[prop["key"]]);
+            } else {
+                output[prop["key"]] = object[prop["key"]];
+            }
+        }
 
+        for (let prop of object.getServiceProperties(DecoratorType.STORE_ARRAY_TYPE)) {
+            if (this.isPrimitive(prop["type"].name)) {
+                output[prop["key"]] = object[prop["key"]];
+            } else {
+                output[prop["key"]] = [];
+                for (let val of object[prop["key"]]) {
+                    output[prop["key"]].push(this.produceJSONObject(val));
+                }
+            }
+        }
+
+        return output;
     }
 
+    private isPrimitive(typeName: string): boolean {
+        return typeName === "String" || typeName === "number";
+    }
 
     //
     // async update(item: T): Promise<Status<void>> {

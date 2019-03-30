@@ -1,3 +1,5 @@
+import {DecoratorType} from "../decorators/genericDecorator";
+
 export default abstract class Entity {
     private _id: string;
 
@@ -9,20 +11,12 @@ export default abstract class Entity {
         this._id = value;
     }
 
-    getReadProperties(): string[] {
-        if (!this["_read_properties"]) {
+    getServiceProperties(type: DecoratorType) {
+        if (!this[type]) {
             return [];
         }
 
-        return this["_read_properties"];
-    }
-
-    getArrayReadProperties(): string[] {
-        if (!this["_read_array_properties"]) {
-            return [];
-        }
-
-        return this["_read_array_properties"];
+        return this[type];
     }
 
     getStoreJson(): object {
