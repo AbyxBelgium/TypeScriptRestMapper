@@ -73,6 +73,16 @@ export default class Service<T extends Entity> {
         }
     }
 
+    async update(item: T): Promise<Status<void>> {
+        try {
+            let response: any = await axios.post(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + item.id, this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
+            return new Status(true, null, null);
+        } catch (error) {
+            console.log(error);
+            return new Status(false, error, null);
+        }
+    }
+
     private produceJSONObject(object: Entity, singularType: DecoratorType, arrayType: DecoratorType) {
         let output = {};
         for (let prop of object.getServiceProperties(singularType)) {
@@ -108,16 +118,6 @@ export default class Service<T extends Entity> {
         return typeName === "String" || typeName === "number";
     }
 
-    //
-    // async update(item: T): Promise<Status<void>> {
-    //     try {
-    //         let response: any = await client.post(this.name + "/" + item.id, item.getUpdateJson());
-    //         return new Status(true);
-    //     } catch (error) {
-    //         console.log(error);
-    //         return new Status(false, error);
-    //     }
-    // }
     //
     // async list(page: number, size: number): Promise<Status<T[]>> {
     //     try {

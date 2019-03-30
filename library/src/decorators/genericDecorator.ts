@@ -3,7 +3,7 @@ import "reflect-metadata";
 export enum DecoratorType {
     READ_TYPE = "_read_properties",
     STORE_TYPE = "_store_properties",
-    UDPATE_TYPE = "_update_properties",
+    UPDATE_TYPE = "_update_properties",
     READ_ARRAY_TYPE = "_read_array_properties",
     STORE_ARRAY_TYPE = "_store_array_properties",
     UPDATE_ARRAY_TYPE = "_update_array_properties"

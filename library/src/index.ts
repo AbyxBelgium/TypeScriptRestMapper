@@ -6,7 +6,7 @@ function test() {
     let visualisationService: Service<Visualisation> = new Service<Visualisation>(Visualisation, "http://localhost:8090/");
     visualisationService.retrieve("80").then(result => {
         console.log(result);
-        visualisationService.store(result.payload);
+        visualisationService.update(result.payload);
     });
 
     let sampleService: Service<Sample> = new Service<Sample>(Sample, "http://localhost:8090/");
