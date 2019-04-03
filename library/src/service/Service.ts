@@ -1,10 +1,10 @@
-import Entity from "../entity/Entity";
-import Status from "./Status";
+import {Entity} from "../entity/Entity";
+import {Status} from "./Status";
 import axios from "axios";
 import pluralize from "pluralize";
 import {DecoratorType} from "../decorators/genericDecorator";
 
-export default class Service<T extends Entity> {
+export class Service<T extends Entity> {
     private type: string;
     private typeClass: any;
     private baseURL: string;

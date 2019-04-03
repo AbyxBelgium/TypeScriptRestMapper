@@ -1,4 +1,4 @@
-export default class Status<T> {
+export class Status<T> {
     public readonly errorMessage: string | null;
     public readonly successful: boolean;
     public readonly payload: T | null;
