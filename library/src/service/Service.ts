@@ -41,7 +41,7 @@ export class Service<T extends Entity> {
             let key = property["key"].substr(1);
 
             if (!data.hasOwnProperty(key)) {
-                console.info("WARNING: property " + key + " was not found in response results!");
+                console.warn("WARNING: property " + key + " was not found in response results!");
             }
 
             if (this.isPrimitive(property["type"].name)) {
@@ -58,7 +58,7 @@ export class Service<T extends Entity> {
             let key = property["key"].substr(1);
 
             if (!data.hasOwnProperty(key)) {
-                console.info("WARNING: property " + key + " was not found in response results!");
+                console.warn("WARNING: property " + key + " was not found in response results!");
             }
 
             payload[key] = [];
@@ -153,7 +153,7 @@ export class Service<T extends Entity> {
         for (let prop of object.getServiceProperties(singularType)) {
             let serializedKey = prop["key"].substr(1);
             if (!object.hasOwnProperty(prop["key"])) {
-                console.info("Tried to serialize not-existing property: " + serializedKey);
+                console.warn("Tried to serialize not-existing property: " + serializedKey);
             }
 
             if (this.isPrimitive(prop["type"].name)) {
