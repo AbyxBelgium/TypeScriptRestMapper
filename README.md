@@ -11,6 +11,9 @@ Features:
  
 **NOTE: This package is still under development, and as a consequence documentation is still under development. I don't think the API will change in the future, but changes are not ruled out.**
 
+## Installation
+TypeScriptRestMapper is available on NPM, and can be installed using `npm install typescript-rest-mapper`.
+
 ## Quick example
 This package exposes a class called `Entity`. Every TypeScript-class for which JSON-objects are retrieved from an API, should extend the `Entity`-class. TypeScriptRestMapper exposes 4 different types of decorators, that can be used inside of a class to indicate which properties should be serialised and read for which type of REST-operation.
 
