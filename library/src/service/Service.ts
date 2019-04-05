@@ -21,7 +21,7 @@ export class Service<T extends Entity> {
         }
     }
 
-    async retrieve(id: string, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
+    async retrieve(id: string = null, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
         try {
             let result: any = await axios.get(this.resolveUrl(endPoint, urlParams, id), axiosConfig);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
