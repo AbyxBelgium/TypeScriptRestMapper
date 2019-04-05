@@ -21,8 +21,12 @@ export class Service<T extends Entity> {
         }
     }
 
-    async retrieve(id: string = null, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
+    async retrieve(id: string = null, params: object = {}, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
         try {
+            if (params) {
+                axiosConfig["params"] = params;
+            }
+
             let result: any = await axios.get(this.resolveUrl(endPoint, urlParams, id), axiosConfig);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
@@ -74,8 +78,12 @@ export class Service<T extends Entity> {
         return payload;
     }
 
-    async store(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
+    async store(item: T, params: object = {}, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
         try {
+            if (params) {
+                axiosConfig["params"] = params;
+            }
+
             let result: any = await axios.post(this.resolveUrl(endPoint, urlParams), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE), axiosConfig);
             return new Status(true, null, null);
         } catch (error) {
@@ -84,8 +92,12 @@ export class Service<T extends Entity> {
         }
     }
 
-    async update(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
+    async update(item: T, params: object = {}, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
         try {
+            if (params) {
+                axiosConfig["params"] = params;
+            }
+
             let response: any = await axios.post(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE), axiosConfig);
             return new Status(true, null, null);
         } catch (error) {
@@ -94,8 +106,12 @@ export class Service<T extends Entity> {
         }
     }
 
-    async delete(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
+    async delete(item: T, params: object = {}, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
         try {
+            if (params) {
+                axiosConfig["params"] = params;
+            }
+
             await axios.delete(this.resolveUrl(endPoint, urlParams, item.id), axiosConfig);
             return new Status<T>(true, null, null);
         } catch (error) {

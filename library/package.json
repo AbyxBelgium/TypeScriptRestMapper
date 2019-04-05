@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-mapper",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Package that allows you to automagically build services that consume REST API's. Received/send data is automatically converted between real TypeScript-objects and JSON-objects.",
   "main": "dist/bundle.js",
   "typings": "dist/index.d.ts",
