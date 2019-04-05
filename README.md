@@ -112,5 +112,7 @@ if (result.successfull) {
 }
 ```
 
+The result of this operation is a TypeScript-object of the `Sample`-class that contains an array of nested `Feature`-objects.
+
 ## Documentation
 Full documentation for this package is still under construction. Checkout our wiki in the future for the full documentation.
