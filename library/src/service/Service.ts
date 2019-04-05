@@ -9,13 +9,11 @@ import {Pagination} from "./Pagination";
 export class Service<T extends Entity> {
     private type: string;
     private typeClass: any;
-    private endPoint: string;
     private baseURL: string;
 
-    constructor(x: (new () => T), baseURL: string, endPoint: string = null) {
+    constructor(x: (new () => T), baseURL: string) {
         this.type = x.name;
         this.typeClass = x;
-        this.endPoint = endPoint;
         this.baseURL = baseURL;
 
         if (!this.baseURL.endsWith('/')) {
@@ -23,9 +21,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async retrieve(id: string): Promise<Status<T>> {
+    async retrieve(id: string, endPoint: string = null, urlParams: any = {}): Promise<Status<T>> {
         try {
-            let result: any = await axios.get(this.getUrl() + "/" + id);
+            let result: any = await axios.get(this.resolveUrl(endPoint, urlParams, id));
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
             console.error(error);
@@ -70,9 +68,9 @@ export class Service<T extends Entity> {
         return payload;
     }
 
-    async store(item: T): Promise<Status<void>> {
+    async store(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.getUrl(), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
+            let result: any = await axios.post(this.resolveUrl(endPoint, urlParams), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -80,9 +78,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async update(item: T): Promise<Status<void>> {
+    async update(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<void>> {
         try {
-            let response: any = await axios.post(this.getUrl() + "/" + item.id, this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
+            let response: any = await axios.post(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -90,9 +88,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async delete(item: T): Promise<Status<T>> {
+    async delete(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<T>> {
         try {
-            await axios.delete(this.getUrl() + "/" + item.id);
+            await axios.delete(this.resolveUrl(endPoint, urlParams, item.id));
             return new Status<T>(true, null, null);
         } catch (error) {
             console.error(error);
@@ -100,7 +98,7 @@ export class Service<T extends Entity> {
         }
     }
 
-    async list(page: number, size: number, params: object = {}): Promise<Status<Paginated<T>>> {
+    async list(page: number, size: number, params: object = {}, endPoint: string = null, urlParams: any = {}): Promise<Status<Paginated<T>>> {
         try {
             let options = {
                 ...params, ...{
@@ -109,7 +107,7 @@ export class Service<T extends Entity> {
                 }
             };
 
-            let response: any = await axios.get(this.getUrl(), {
+            let response: any = await axios.get(this.resolveUrl(endPoint, urlParams), {
                     params: options
                 }
             );
@@ -165,11 +163,43 @@ export class Service<T extends Entity> {
         return typeName.toLowerCase() === "string" || typeName.toLowerCase() === "number" || typeName.toLowerCase() === "boolean";
     }
 
-    private getUrl(): string {
-        if (this.endPoint) {
-            return this.baseURL + this.endPoint;
+    private getUrl(endPoint: String): string {
+        if (endPoint !== null) {
+            return this.baseURL + endPoint;
         } else {
             return this.baseURL + pluralize.plural(this.type.toLowerCase());
+        }
+    }
+
+    /**
+     * Fills in all the required params indicated in URL by :<name> with their corresponding value in urlParams.
+     *
+     * @param url
+     * @param urlParams
+     */
+    private fillUrl(url: string, urlParams: any): string {
+        let regex = /:[^:]*/;
+        let match = regex.exec(url);
+
+        while (match !== null) {
+            console.log(match[0]);
+            let paramName = match[0].substr(1);
+            url = url.replace(match[0], urlParams[match[0]]);
+        }
+
+        return url;
+    }
+
+    private resolveUrl(endPoint: string, urlParams: any, id: string = null): string {
+        let computedUrl: string = this.getUrl(endPoint);
+        // When no endPoint was specifically given, the id is automatically filled in and appended. Otherwise, the
+        // provider of the URL must also account for the id-parameter in the URL.
+        if (endPoint !== null || id === null) {
+            return this.fillUrl(computedUrl, urlParams);
+        } else {
+            return this.fillUrl(computedUrl + "/:id", {
+                id: id
+            });
         }
     }
 }
