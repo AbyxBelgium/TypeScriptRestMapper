@@ -59,8 +59,14 @@ export class Service<T extends Entity> {
 
             payload[key] = [];
 
-            for (let arrayEl of data[key]) {
-                payload[key].push(this.parseObject(arrayEl, property['type']))
+            if (this.isPrimitive(property["type"].name)) {
+                for (let arrayEl of data[key]) {
+                    payload[key].push(arrayEl)
+                }
+            } else {
+                for (let arrayEl of data[key]) {
+                    payload[key].push(this.parseObject(arrayEl, property['type']))
+                }
             }
         }
 
