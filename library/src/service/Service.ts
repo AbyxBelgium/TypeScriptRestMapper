@@ -21,9 +21,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async retrieve(id: string, endPoint: string = null, urlParams: any = {}): Promise<Status<T>> {
+    async retrieve(id: string, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
         try {
-            let result: any = await axios.get(this.resolveUrl(endPoint, urlParams, id));
+            let result: any = await axios.get(this.resolveUrl(endPoint, urlParams, id), axiosConfig);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
             console.error(error);
@@ -68,9 +68,9 @@ export class Service<T extends Entity> {
         return payload;
     }
 
-    async store(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<void>> {
+    async store(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.resolveUrl(endPoint, urlParams), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
+            let result: any = await axios.post(this.resolveUrl(endPoint, urlParams), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE), axiosConfig);
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -78,9 +78,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async update(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<void>> {
+    async update(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<void>> {
         try {
-            let response: any = await axios.post(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
+            let response: any = await axios.post(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE), axiosConfig);
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -88,9 +88,9 @@ export class Service<T extends Entity> {
         }
     }
 
-    async delete(item: T, endPoint: string = null, urlParams: any = {}): Promise<Status<T>> {
+    async delete(item: T, endPoint: string = null, urlParams: any = {}, axiosConfig: object = {}): Promise<Status<T>> {
         try {
-            await axios.delete(this.resolveUrl(endPoint, urlParams, item.id));
+            await axios.delete(this.resolveUrl(endPoint, urlParams, item.id), axiosConfig);
             return new Status<T>(true, null, null);
         } catch (error) {
             console.error(error);
@@ -98,19 +98,16 @@ export class Service<T extends Entity> {
         }
     }
 
-    async list(page: number, size: number, params: object = {}, endPoint: string = null, urlParams: any = {}): Promise<Status<Paginated<T>>> {
+    async list(page: number, size: number, params: object = {}, endPoint: string = null, urlParams: object = {}, axiosConfig: object = {}): Promise<Status<Paginated<T>>> {
         try {
-            let options = {
+            axiosConfig["params"] = {
                 ...params, ...{
                     page: page,
                     size: size
                 }
             };
 
-            let response: any = await axios.get(this.resolveUrl(endPoint, urlParams), {
-                    params: options
-                }
-            );
+            let response: any = await axios.get(this.resolveUrl(endPoint, urlParams), axiosConfig);
 
             let paginated = new Paginated<T>();
             paginated.pagination = response.data.pagination as Pagination;
