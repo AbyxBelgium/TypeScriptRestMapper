@@ -8,4 +8,12 @@ export class Status<T> {
         this.successful = successful;
         this.payload = payload;
     }
+
+    public map<R>(mapper: (source: T) => R): Status<R> {
+        if (this.successful) {
+            return new Status<R>(this.successful, this.errorMessage, mapper(this.payload));
+        } else {
+            return new Status<R>(this.successful, this.errorMessage);
+        }
+    }
 }

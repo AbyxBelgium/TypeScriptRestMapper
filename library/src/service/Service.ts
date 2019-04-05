@@ -3,15 +3,19 @@ import {Status} from "./Status";
 import axios from "axios";
 import pluralize from "pluralize";
 import {DecoratorType} from "../decorators/genericDecorator";
+import {Paginated} from "./Paginated";
+import {Pagination} from "./Pagination";
 
 export class Service<T extends Entity> {
     private type: string;
     private typeClass: any;
+    private endPoint: string;
     private baseURL: string;
 
-    constructor(x: (new () => T), baseURL: string) {
+    constructor(x: (new () => T), baseURL: string, endPoint: string = null) {
         this.type = x.name;
         this.typeClass = x;
+        this.endPoint = endPoint;
         this.baseURL = baseURL;
 
         if (!this.baseURL.endsWith('/')) {
@@ -21,7 +25,7 @@ export class Service<T extends Entity> {
 
     async retrieve(id: string): Promise<Status<T>> {
         try {
-            let result: any = await axios.get(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + id);
+            let result: any = await axios.get(this.getUrl() + "/" + id);
             return new Status(true, "", this.parseObject(result.data, this.typeClass));
         } catch(error) {
             console.error(error);
@@ -34,13 +38,16 @@ export class Service<T extends Entity> {
         for (let property of payload.getServiceProperties(DecoratorType.READ_TYPE)) {
             let key = property["key"].substr(1);
 
-            if (!this.isPrimitive(property["type"].name)) {
-                payload[key] = this.parseObject(data[key], property["type"]);
-            } else {
-                if (!data.hasOwnProperty(key)) {
-                    console.info("WARNING: property " + key + " was not found in response results!");
-                }
+            if (!data.hasOwnProperty(key)) {
+                console.info("WARNING: property " + key + " was not found in response results!");
+            }
+
+            if (this.isPrimitive(property["type"].name)) {
                 payload[key] = data[key];
+            } else if (property["type"].name.toLowerCase() === "date") {
+                payload[property] = new Date(data[property]);
+            } else {
+                payload[key] = this.parseObject(data[key], property["type"]);
             }
         }
 
@@ -49,7 +56,7 @@ export class Service<T extends Entity> {
             let key = property["key"].substr(1);
 
             if (!data.hasOwnProperty(key)) {
-                console.log("WARNING: property " + key + " was not found in response results!");
+                console.info("WARNING: property " + key + " was not found in response results!");
             }
 
             payload[key] = [];
@@ -65,7 +72,7 @@ export class Service<T extends Entity> {
 
     async store(item: T): Promise<Status<void>> {
         try {
-            let result: any = await axios.post(this.baseURL + pluralize.plural(this.type.toLowerCase()), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
+            let result: any = await axios.post(this.getUrl(), this.produceJSONObject(item, DecoratorType.STORE_TYPE, DecoratorType.STORE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
@@ -75,43 +82,51 @@ export class Service<T extends Entity> {
 
     async update(item: T): Promise<Status<void>> {
         try {
-            let response: any = await axios.post(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + item.id, this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
+            let response: any = await axios.post(this.getUrl() + "/" + item.id, this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE));
             return new Status(true, null, null);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return new Status(false, error, null);
         }
     }
 
     async delete(item: T): Promise<Status<T>> {
         try {
-            await axios.delete(this.baseURL + pluralize.plural(this.type.toLowerCase()) + "/" + item.id);
+            await axios.delete(this.getUrl() + "/" + item.id);
             return new Status<T>(true, null, null);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return new Status<T>(false, error);
         }
     }
 
-    async list(page: number, size: number): Promise<Status<T[]>> {
+    async list(page: number, size: number, params: object = {}): Promise<Status<Paginated<T>>> {
         try {
+            let options = {
+                ...params, ...{
+                    page: page,
+                    size: size
+                }
+            };
 
-            let response: any = await axios.get(this.baseURL + pluralize.plural(this.type.toLowerCase()), {
-                    params: {
-                        page: page,
-                        size: size
-                    }
+            let response: any = await axios.get(this.getUrl(), {
+                    params: options
                 }
             );
+
+            let paginated = new Paginated<T>();
+            paginated.pagination = response.data.pagination as Pagination;
 
             let payload: T[] = [];
             for (let item of response.data.items) {
                 payload.push(this.parseObject(item, this.typeClass));
             }
 
-            return new Status(true, "", payload);
+            paginated.items = payload;
+
+            return new Status(true, "", paginated);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return new Status(false, error);
         }
     }
@@ -143,11 +158,18 @@ export class Service<T extends Entity> {
             }
         }
 
-        console.log(output);
         return output;
     }
 
     private isPrimitive(typeName: string): boolean {
-        return typeName === "String" || typeName === "number";
+        return typeName.toLowerCase() === "string" || typeName.toLowerCase() === "number" || typeName.toLowerCase() === "boolean";
+    }
+
+    private getUrl(): string {
+        if (this.endPoint) {
+            return this.baseURL + this.endPoint;
+        } else {
+            return this.baseURL + pluralize.plural(this.type.toLowerCase());
+        }
     }
 }

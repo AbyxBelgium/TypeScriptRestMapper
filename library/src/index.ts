@@ -7,3 +7,5 @@ export {Store} from "./decorators/store";
 export {StoreArray} from "./decorators/storeArray";
 export {Update} from "./decorators/update";
 export {UpdateArray} from "./decorators/updateArray";
+export {Paginated} from "./service/Paginated";
+export {Pagination} from "./service/Pagination";
