@@ -178,13 +178,13 @@ export class Service<T extends Entity> {
      * @param urlParams
      */
     private fillUrl(url: string, urlParams: any): string {
-        let regex = /:[^:]*/;
+        let regex = /<<[^<>]*>>/;
         let match = regex.exec(url);
 
         while (match !== null) {
-            console.log(match[0]);
-            let paramName = match[0].substr(1);
-            url = url.replace(match[0], urlParams[match[0]]);
+            let paramName = match[0].substring(2, match[0].length - 2);
+            url = url.replace(match[0], urlParams[paramName]);
+            match = regex.exec(url);
         }
 
         return url;
@@ -197,7 +197,7 @@ export class Service<T extends Entity> {
         if (endPoint !== null || id === null) {
             return this.fillUrl(computedUrl, urlParams);
         } else {
-            return this.fillUrl(computedUrl + "/:id", {
+            return this.fillUrl(computedUrl + "/<<id>>", {
                 id: id
             });
         }
