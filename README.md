@@ -11,6 +11,9 @@ Features:
  
 **NOTE: This package is still under development, and as a consequence documentation is still under development. I don't think the API will change in the future, but changes are not ruled out.**
 
+Latest changes (v1.0.17):
+* Fixed update-method always performed HTTP POST-request instead of HTTP PUT-request.
+
 ## Installation
 TypeScriptRestMapper is available on NPM, and can be installed using `npm install typescript-rest-mapper`. Note that you must enable support for decoraters in your `tsconfig.json` by adding `"experimentalDecorators": true` and `"emitDecoratorMetadata": true` to the `compilerOptions`.
 
