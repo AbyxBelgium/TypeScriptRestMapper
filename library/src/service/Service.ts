@@ -98,7 +98,7 @@ export class Service<T extends Entity> {
                 axiosConfig["params"] = params;
             }
 
-            let response: any = await axios.post(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE), axiosConfig);
+            let response: any = await axios.put(this.resolveUrl(endPoint, urlParams, item.id), this.produceJSONObject(item, DecoratorType.UPDATE_TYPE, DecoratorType.UPDATE_ARRAY_TYPE), axiosConfig);
             return new Status(true, null, null);
         } catch (error) {
             console.error(error);
