@@ -9,7 +9,7 @@ Features:
  * Completely configurable. This package is built on top of Axios, one of the most popular JavaScript HTTP-libraries out there. All of Axios options can be set through this package, yielding full flexibility.
  * Built-in support for Date-objects.
  
-See our (quickstart)[https://github.com/AbyxBelgium/TypeScriptRestMapper/wiki/Quickstart] and start developing with TypeScript REST Mapper right now.
+See our [quickstart](https://github.com/AbyxBelgium/TypeScriptRestMapper/wiki/Quickstart) and start developing with TypeScript REST Mapper right now.
  
 **NOTE: This package is still under development, and as a consequence documentation is still under development. I don't think the API will change in the future, but changes are not ruled out.**
 
