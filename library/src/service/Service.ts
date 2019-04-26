@@ -36,6 +36,10 @@ export class Service<T extends Entity> {
     }
 
     private parseObject(data: any, typeClass): any {
+        if (data === null || data === undefined) {
+            return data;
+        }
+
         let payload = new typeClass();
         for (let property of payload.getServiceProperties(DecoratorType.READ_TYPE)) {
             let key = property["key"].substr(1);
@@ -47,9 +51,12 @@ export class Service<T extends Entity> {
             if (this.isPrimitive(property["type"].name)) {
                 payload[key] = data[key];
             } else if (property["type"].name.toLowerCase() === "date") {
-                payload[property] = new Date(data[property]);
+                payload[key] = new Date(data[key]);
             } else {
-                payload[key] = this.parseObject(data[key], property["type"]);
+                // NO CLUE why this is necessary
+                if (data[key] !== null && data[key] !== undefined && typeof data[key][Symbol.iterator] === 'function') {
+                    payload[key] = this.parseObject(data[key], property["type"]);
+                }
             }
         }
 
