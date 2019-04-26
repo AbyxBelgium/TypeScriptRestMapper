@@ -1,5 +1,5 @@
 # TypeScriptRestMapper
-The TypeScriptRestMapper package provides an easy-to-use and efficient way to automatically construct a service, which is capabel of performing REST CRUD-operations. No need to manually perform HTTP-requests, receive results, perform error handling and parse JSON into true TypeScript-objects. You only need to instanciate a new Service, with the correct type of object and you can start consuming REST API's immediatly.
+The TypeScript REST Mapper package provides an easy-to-use and efficient way to automatically construct a service, which is capabel of performing REST CRUD-operations. No need to manually perform HTTP-requests, receive results, perform error handling and parse JSON into true TypeScript-objects. You only need to instanciate a new Service, with the correct type of object and you can start consuming REST API's immediatly.
 
 Features:
  * Automatically perform HTTP REST requests
@@ -9,7 +9,12 @@ Features:
  * Completely configurable. This package is built on top of Axios, one of the most popular JavaScript HTTP-libraries out there. All of Axios options can be set through this package, yielding full flexibility.
  * Built-in support for Date-objects.
  
+See our [quickstart](https://github.com/AbyxBelgium/TypeScriptRestMapper/wiki/Quickstart) and start developing with TypeScript REST Mapper right now.
+ 
 **NOTE: This package is still under development, and as a consequence documentation is still under development. I don't think the API will change in the future, but changes are not ruled out.**
+
+Latest changes (v1.0.17):
+* Fixed update-method always performed HTTP POST-request instead of HTTP PUT-request.
 
 ## Installation
 TypeScriptRestMapper is available on NPM, and can be installed using `npm install typescript-rest-mapper`. Note that you must enable support for decoraters in your `tsconfig.json` by adding `"experimentalDecorators": true` and `"emitDecoratorMetadata": true` to the `compilerOptions`.
