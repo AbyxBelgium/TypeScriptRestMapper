@@ -1,9 +1,10 @@
 {
   "name": "typescript-rest-mapper",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Package that allows you to automagically build services that consume REST API's. Received/send data is automatically converted between real TypeScript-objects and JSON-objects.",
   "main": "dist/bundle.js",
   "typings": "dist/index.d.ts",
+  "readme": "README.md",
   "scripts": {
     "build": "webpack && dts-bundle --configJson dts-bundle.config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,8 +27,8 @@
   },
   "homepage": "https://github.com/AbyxBelgium/TypeScriptRestMapper#readme",
   "devDependencies": {
-    "@babel/core": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "babel-loader": "^8.0.5",
     "dts-bundle": "^0.7.3",
     "ts-loader": "^5.3.3",
