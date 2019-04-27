@@ -53,10 +53,7 @@ export class Service<T extends Entity> {
             } else if (property["type"].name.toLowerCase() === "date") {
                 payload[key] = new Date(data[key]);
             } else {
-                // NO CLUE why this is necessary
-                if (data[key] !== null && data[key] !== undefined && typeof data[key][Symbol.iterator] === 'function') {
-                    payload[key] = this.parseObject(data[key], property["type"]);
-                }
+                payload[key] = this.parseObject(data[key], property["type"]);
             }
         }
 
@@ -75,8 +72,11 @@ export class Service<T extends Entity> {
                     payload[key].push(arrayEl)
                 }
             } else {
-                for (let arrayEl of data[key]) {
-                    payload[key].push(this.parseObject(arrayEl, property['type']))
+                // NO CLUE why this is necessary
+                if (data[key] !== null && data[key] !== undefined && typeof data[key][Symbol.iterator] === 'function') {
+                    for (let arrayEl of data[key]) {
+                        payload[key].push(this.parseObject(arrayEl, property['type']))
+                    }
                 }
             }
         }
